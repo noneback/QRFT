@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+#WebApplication2
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRFT", "QRFT\QRFT.csproj", "{CA9B06AA-7DA3-4BF9-A084-5218000198A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA9B06AA-7DA3-4BF9-A084-5218000198A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA9B06AA-7DA3-4BF9-A084-5218000198A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA9B06AA-7DA3-4BF9-A084-5218000198A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA9B06AA-7DA3-4BF9-A084-5218000198A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {980D8C70-BDC3-40C4-AB4A-A0E9CAC6891E}
+	EndGlobalSection
+EndGlobal
