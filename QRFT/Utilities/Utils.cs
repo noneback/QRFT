@@ -1,7 +1,10 @@
-﻿using System;
+﻿using QRCoder;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Sockets;
 
 namespace QRFT.Utilities {
     //todo pathHash,ZipFiles
@@ -79,6 +82,28 @@ namespace QRFT.Utilities {
             }
 
             return buffer_size;
+        }
+
+        public static string generateQRCode(string msg) {
+            //generate QRCode String
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(msg, QRCodeGenerator.ECCLevel.Q);
+            AsciiQRCode qrCode = new AsciiQRCode(qrCodeData);
+            return qrCode.GetGraphic(1);
+        }
+        public static string getLocalIp() {
+            string hostname = Dns.GetHostName();//得到本机名   
+            IPHostEntry localhost = Dns.GetHostEntry(hostname);
+            List<IPAddress> ipv4 = new List<IPAddress>();
+            foreach (var addr in localhost.AddressList) {
+                if (addr.AddressFamily == AddressFamily.InterNetwork) {
+                    ipv4.Add(addr);
+                    Console.WriteLine(addr.ToString());
+                }
+
+            }
+            return ipv4[ipv4.Count-1].ToString();
+            
         }
     }
 }

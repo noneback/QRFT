@@ -5,13 +5,17 @@ namespace QRFT.Model {
 
     public class Config {
         private string _filePath;
-        private string baseURL = "https://localhost:5001/api/file/";
-        private string hash;
-        private string downloadUrl;
         private static Config config;
-
         private Config() {
         }
+        public string LANAddr { set; get; } = "localhost";
+        public int Port { set; get; } = 5000;
+
+        public string BaseURL { get =>$"http://{LANAddr}:{Port}/api/file/";}
+
+        public string UploadURL { get => $"http://{LANAddr}:{Port}/api/file/"; }
+
+        public string DownloadURL {   get => $"http://{LANAddr}:{Port}/api/file/{Hash}";}
 
         public string FilePath {
             set {
@@ -23,20 +27,7 @@ namespace QRFT.Model {
             get => _filePath;
         }
 
-        public string Hash {
-            get => hash;
-            set {
-                hash = value;
-                DownloadURL = baseURL + hash;
-            }
-        }
-
-        public string DownloadURL {
-            get => downloadUrl;
-            set => downloadUrl = value;
-        }
-
-        public string UploadURL { get; set; }
+        public string Hash {get;set;}
 
         public static Config getInstance() {
             if (config == null) {
