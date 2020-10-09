@@ -20,7 +20,7 @@
                 "        }\n" +
                 "        #warpper{\n" +
                 "            font-size: 1em;\n" +
-                "            padding:0em 1em;\n" +
+                "            padding:0em 0.5em;\n" +
                 "        }\n" +
                 "        @media screen and (max-width:900px)and (min-width: 500px){\n" +
                 "            #warpper {\n" +
@@ -40,7 +40,8 @@
                 "\n" +
                 "        @media screen and (min-width:901px) {\n" +
                 "            #warpper {\n" +
-                "                width: 40%;\n" +
+                "                padding:0em 0.5em;\n" +
+                "                width: 45%;\n" +
                 "                margin: 0 auto;\n" +
                 "                text-align: center;\n" +
                 "                -webkit-box-shadow: 0px 3px 3px #c8c8c8;\n" +

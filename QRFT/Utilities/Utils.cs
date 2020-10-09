@@ -6,28 +6,42 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.Sockets;
 
+/**
+ * Utils has all the other function that should be used in program
+ * 
+ */
+
 namespace QRFT.Utilities {
     //todo pathHash,ZipFiles
 
     public static class Utils {
-        private static Dictionary<string, string> map = new Dictionary<string, string>();
-        private const string zipPath = "./tmp.zip";
+
+        private static Dictionary<string, string> map = new Dictionary<string, string>();// for path hash
+        private static string zipPath = $"./tmp-{DateTime.Now.ToLongDateString()}-{new Random().Next(100, 1000).ToString()}.zip";
+        private static string tmpNullDirPath = "./.null";
 
         public static string hash(string filePath) {
+            //path hash
             var key = new Random().Next(1000, 10000).ToString();
             map.Add(key, filePath);
             return key;
         }
 
         public static string getFilePath(string hash) {
+            //get path 
             return map[hash];
         }
 
         public static bool createZipFiles(params string[] filePaths) {
             try {
                 //create an empty zip
+                if (!Directory.Exists(tmpNullDirPath)) {
+                    Directory.CreateDirectory(tmpNullDirPath);
+                }
+                ZipFile.CreateFromDirectory(tmpNullDirPath, zipPath);
 
-                ZipFile.CreateFromDirectory("./NULL", zipPath);
+                // todo this zipPath should be a paras pass by function
+                Directory.Delete(tmpNullDirPath);
                 // add files init
 
                 using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Open)) {
@@ -63,6 +77,7 @@ namespace QRFT.Utilities {
         }
 
         public static int getBufferSize(long size) {
+            //auto set buffersize
             const long G = 1024 * 1024 * 1024;
             const int M = 1024 * 1024;
             const int K = 1024;
@@ -92,6 +107,7 @@ namespace QRFT.Utilities {
             return qrCode.GetGraphic(1);
         }
         public static string getLocalIp() {
+            //get local ipv4 LAN addr
             string hostname = Dns.GetHostName();//得到本机名   
             IPHostEntry localhost = Dns.GetHostEntry(hostname);
             List<IPAddress> ipv4 = new List<IPAddress>();
@@ -102,8 +118,8 @@ namespace QRFT.Utilities {
                 }
 
             }
-            return ipv4[ipv4.Count-1].ToString();
-            
+            return ipv4[ipv4.Count - 1].ToString();
+
         }
     }
 }

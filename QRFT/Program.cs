@@ -18,9 +18,9 @@ namespace QRTF {
             Console.WriteLine(config.DownloadURL);
             Console.WriteLine(Utils.generateQRCode(config.DownloadURL));
 
-            /*test zip
+            //test zip
             Utils.createZipFiles("./Program.cs", "./Startup.cs");
-            Utils.deleteTmpZipFIle();*/
+            //Utils.deleteTmpZipFIle();
             //parse and save into config
 
             foreach (var arg in args) {
