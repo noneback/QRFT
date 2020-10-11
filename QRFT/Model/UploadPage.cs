@@ -148,7 +148,7 @@
                 "                        console.log(this.responseText);\n" +
                 "                    }\n" +
                 "                });\n" +
-                "                xhr.open(\"POST\", \"https://localhost:5001/api/file/upload\");\n" +
+                $"                xhr.open(\"POST\", \"{Config.GetInstance().UploadURL}\");\n" +
                 "                xhr.send(data);\n" +
                 "            }\n" +
                 "        })\n" +

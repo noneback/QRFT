@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
 /**
@@ -17,34 +19,34 @@ namespace QRFT.Utilities {
     public static class Utils {
 
         private static Dictionary<string, string> map = new Dictionary<string, string>();// for path hash
-        private static string zipPath = $"./tmp-{DateTime.Now.ToLongDateString()}-{new Random().Next(100, 1000).ToString()}.zip";
+        public static string ZipFile { set; get; } = $"./tmp-{DateTime.Now.ToLongDateString()}-{new Random().Next(100, 1000).ToString()}.zip";
         private static string tmpNullDirPath = "./.null";
 
-        public static string hash(string filePath) {
+        public static string Hash(string filePath) {
             //path hash
             var key = new Random().Next(1000, 10000).ToString();
             map.Add(key, filePath);
             return key;
         }
 
-        public static string getFilePath(string hash) {
+        public static string GetFilePath(string hash) {
             //get path 
             return map[hash];
         }
 
-        public static bool createZipFiles(params string[] filePaths) {
+        public static bool CreateZipFiles(params string[] filePaths) {
             try {
                 //create an empty zip
                 if (!Directory.Exists(tmpNullDirPath)) {
                     Directory.CreateDirectory(tmpNullDirPath);
                 }
-                ZipFile.CreateFromDirectory(tmpNullDirPath, zipPath);
+                System.IO.Compression.ZipFile.CreateFromDirectory(tmpNullDirPath, ZipFile);
 
-                // todo this zipPath should be a paras pass by function
+                // todo this ZipFile should be a paras pass by function
                 Directory.Delete(tmpNullDirPath);
                 // add files init
 
-                using (FileStream zipToOpen = new FileStream(zipPath, FileMode.Open)) {
+                using (FileStream zipToOpen = new FileStream(ZipFile, FileMode.Open)) {
                     using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update)) {
                         foreach (var filepath in filePaths) {
                             ZipArchiveEntry entry = archive.CreateEntry(filepath);
@@ -66,9 +68,11 @@ namespace QRFT.Utilities {
             return false;
         }
 
-        public static bool deleteTmpZipFIle() {
+        public static bool DeleteTmpZipFIle() {
             try {
-                File.Delete(zipPath);
+                if (File.Exists(ZipFile)) {
+                    File.Delete(ZipFile);
+                }
                 return true;
             } catch (IOException e) {
                 Console.Error.WriteLine("Delete tmp.zip failed\n", e.Message);
@@ -76,7 +80,7 @@ namespace QRFT.Utilities {
             }
         }
 
-        public static int getBufferSize(long size) {
+        public static int GetBufferSize(long size) {
             //auto set buffersize
             const long G = 1024 * 1024 * 1024;
             const int M = 1024 * 1024;
@@ -85,28 +89,28 @@ namespace QRFT.Utilities {
 
             if (size >= G * 10) {
                 //size>=10G
-                buffer_size = 10 * M;
+                buffer_size = 4 * M;
             } else if (size >= G) {
-                buffer_size = 5 * M;
+                buffer_size =  1* M;
             } else if (size >= 500 * M) {
-                buffer_size = 3 * M;
+                buffer_size = 800 * K;
             } else if (size >= 100 * M) {
-                buffer_size = M;
+                buffer_size = 500*K;
             } else if (size >= 10 * M) {
-                buffer_size = K * 500;
+                buffer_size = 100*K ;
             }
 
             return buffer_size;
         }
 
-        public static string generateQRCode(string msg) {
+        public static string GenerateQRCode(string msg) {
             //generate QRCode String
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(msg, QRCodeGenerator.ECCLevel.Q);
             AsciiQRCode qrCode = new AsciiQRCode(qrCodeData);
             return qrCode.GetGraphic(1);
         }
-        public static string getLocalIp() {
+        public static string GetLocalIp() {
             //get local ipv4 LAN addr
             string hostname = Dns.GetHostName();//得到本机名   
             IPHostEntry localhost = Dns.GetHostEntry(hostname);
@@ -118,8 +122,18 @@ namespace QRFT.Utilities {
                 }
 
             }
-            return ipv4[ipv4.Count - 1].ToString();
+            return ipv4[^1].ToString();
 
+        }
+
+        public static int GetRandomPort() {
+            var random = new Random();
+            var port = random.Next(10000, 60000);
+
+            while (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(p=>p.Port==port)){
+                port = random.Next(10000, 60000);
+            }
+            return port;
         }
     }
 }

@@ -15,7 +15,7 @@ namespace QRTF.Controllers {
     [Route("api/[controller]")]
     [ApiController]
     public class FileController : ControllerBase {
-        private static Config config = Config.getInstance();
+        private static Config config = Config.GetInstance();
         private string filePath;
         private string hash;
 
@@ -26,25 +26,28 @@ namespace QRTF.Controllers {
 
         [HttpGet("{hash}")]
         public IActionResult Get(string hash) {
-            Logger.consoleRouterLog("Post", "/api/file/upload", DateTime.Now);
+            Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
             // send file from computer
             if (!hash.Equals(this.hash)) {
                 return NotFound();
             }
 
             var stream = System.IO.File.OpenRead(filePath);
-
+            
             if (stream == null) {
                 return NotFound();
             }
-            return new FileStreamResult(stream, "application/octet-stream");
+
+            //Response.Headers.Add("Content-Disposition","")
+
+            return  new FileStreamResult(stream, "application/octet-stream") { FileDownloadName=Path.GetFileName(filePath)};
         }
 
         [HttpPost("upload")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload() {
             // receive file from phone via cache
-            Logger.consoleRouterLog("Post", "/api/file/upload", DateTime.Now);
+            Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
 
             var f = await Request.ReadFormAsync();
             var files = new List<IFormFile>(f.Files);
@@ -55,13 +58,14 @@ namespace QRTF.Controllers {
                 string filePath;
                 if (file.FileName != null) {
                     //filePath = "./SAVE/" + file.FileName;
-                    filePath = "./" + file.FileName;
+                    filePath =config.StorePath + file.FileName;
                 } else {
                     //filePath = "./SAVE/TEMP.unknow";
-                    filePath = "TEMP.unknow";
+                    filePath =  config.StorePath+"TEMP.unknow";
                 }
                 //set buffer_size
-                int buffer_size = Utils.getBufferSize(size);
+                int buffer_size = Utils.GetBufferSize(size);
+                Console.WriteLine($"buffer_size:{buffer_size}");
 
                 if (file.Length > 0) {
                     using (var stream = System.IO.File.Create(filePath)) {
@@ -76,13 +80,14 @@ namespace QRTF.Controllers {
                             int readCnt = formFileStream.Read(buffer, 0, buffer_size);
                             while (readCnt == buffer_size) {
                                 stream.Write(buffer, 0, buffer_size);
+                            
                                 readCnt = formFileStream.Read(buffer, 0, buffer_size);
                                 bar.Tick(100 * cnt++ / times);
                             }
                             stream.Write(buffer, 0, readCnt);
-
                             bar.Tick(100);
                         }
+
                         Console.WriteLine($"Save file  in : {filePath}");
                     }
                 }
@@ -119,7 +124,7 @@ namespace QRTF.Controllers {
 
         [HttpGet("upload")]
         public ContentResult UPLOAD() {
-            Logger.consoleRouterLog("Get", "/api/file/upload", DateTime.Now);
+            Logger.ConsoleRouterLog("Get", "/api/file/upload", DateTime.Now);
             Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
             return base.Content(UploadPage.html, "text/html");
         }

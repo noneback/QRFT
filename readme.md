@@ -5,7 +5,7 @@ QR code file transfer between your terminals via LAN
 > import into vs2019 and build
 ## usage
 >- qrft receive ${file_path}  
->- qrft send ${file_path}
+>- qrft send ${files_path}
 
 ## commit  
 
@@ -23,9 +23,9 @@ QR code file transfer between your terminals via LAN
 ## todo
 - [x] transfer via cache
 - [ ] transfer via stream
-- [ ] basic function receive and send
-- [ ] commandline parse and save to config
-- [ ] QR code display
+- [x] basic function receive and send
+- [x] commandline parse and save to config
+- [x] QR code display
 - [x] terminal progress bar
 - [x] send or zip multiple files to send
 - [x] receive multiple files
