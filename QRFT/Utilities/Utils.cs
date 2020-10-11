@@ -111,16 +111,39 @@ namespace QRFT.Utilities {
         }
         public static string GetLocalIp() {
             //get local ipv4 LAN addr
-            string hostname = Dns.GetHostName();//得到本机名   
-            IPHostEntry localhost = Dns.GetHostEntry(hostname);
-            List<IPAddress> ipv4 = new List<IPAddress>();
-            //add  IP Addr
-            foreach (var addr in localhost.AddressList) {
-                if (addr.AddressFamily == AddressFamily.InterNetwork) {
-                    ipv4.Add(addr);
+            var addrs = new List<string>();
+            foreach (var item in NetworkInterface.GetAllNetworkInterfaces()) {
+                if (item.NetworkInterfaceType == NetworkInterfaceType.Wireless80211 && item.OperationalStatus == OperationalStatus.Up) {
+                    //get the LAN IPV4 addr
+                    foreach (var ip in item.GetIPProperties().UnicastAddresses) {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork) {
+                            addrs.Add(ip.Address.ToString());
+                            //test
+                            //Console.WriteLine(ip.Address.ToString() + "::" + item.NetworkInterfaceType.ToString());
+                        }
+                    }
                 }
             }
-            return ipv4[^1].ToString();
+
+            if (addrs.Count == 1) {
+                return addrs[0];
+            }else if (addrs.Count >= 1) {
+                return addrs[^1];
+            } else {
+                Logger.Error("No LAN");
+                return "localhost";
+            }
+
+            //string hostname = Dns.GetHostName();//得到本机名   
+            //IPHostEntry localhost = Dns.GetHostEntry(hostname);
+            //List<IPAddress> ipv4 = new List<IPAddress>();
+            ////add  IP Addr
+            //foreach (var addr in localhost.AddressList) {
+            //    if (addr.AddressFamily == AddressFamily.InterNetwork) {
+            //        ipv4.Add(addr);
+            //    }
+            //}
+            //return ipv4[^1].ToString();
 
         }
 

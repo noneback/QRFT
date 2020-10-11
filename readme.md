@@ -4,8 +4,16 @@ QR code file transfer between your terminals via LAN
 > git clone  
 > import into vs2019 and build
 ## usage
->- qrft receive ${file_path}  
->- qrft send ${files_path}
+- Add exe to your PATH or in its folder
+- In console:
+```bash
+  ./qrtf receive ./{your store path}
+  ./qrtf send -z {fiel path1} {fiel path1}
+```
+- more see --help
+
+## Attention
+the QR code **cannot display** correctly because of the font used by Console , please change the font used in Console(like **fire code**).
 
 ## commit  
 

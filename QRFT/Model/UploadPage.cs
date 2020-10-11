@@ -148,7 +148,7 @@
                 "                        console.log(this.responseText);\n" +
                 "                    }\n" +
                 "                });\n" +
-                $"                xhr.open(\"POST\", \"{Config.GetInstance().UploadURL}\");\n" +
+                $"                xhr.open(\"POST\", \"/api/file/upload\");\n" +
                 "                xhr.send(data);\n" +
                 "            }\n" +
                 "        })\n" +

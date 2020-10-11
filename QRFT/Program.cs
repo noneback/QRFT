@@ -16,6 +16,8 @@ namespace QRTF {
         public static void Main(string[] args) {
 
             config.Port = Utils.GetRandomPort();
+            config.LANAddr = Utils.GetLocalIp();
+            
             if (args == null || args.Length == 0) {
                 Logger.Error("args missing or Error\n");
                 args = new string[] { "--help" };

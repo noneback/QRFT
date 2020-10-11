@@ -27,9 +27,6 @@ namespace QRFT.Model {
     }
 
 
-
-
-
     public class ArgsParser {
         private static ArgsParser parser;
         private static Config config = Config.GetInstance();
@@ -44,9 +41,7 @@ namespace QRFT.Model {
                 Logger.Error("store path  missing or is not a Directory");
                 return 1;
             }
-
             config.StorePath = storePath;
-            config.LANAddr = Utils.GetLocalIp();
             Console.WriteLine(config.UploadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.UploadURL));
             Console.WriteLine("Ctrl+c to exit");
@@ -55,6 +50,7 @@ namespace QRFT.Model {
 
         public static int SendSolution(SendOptions options) {
             var files = options.Files.ToArray();
+
             if (options.Files == null || files.Length == 0) {
                 Logger.Error("Files name missing");
                 return 1;
@@ -72,7 +68,6 @@ namespace QRFT.Model {
                 config.FilePath = files[0];
             }
             config.Hash = Utils.Hash(config.FilePath);
-            config.LANAddr = Utils.GetLocalIp();
             Console.WriteLine(config.DownloadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.DownloadURL));
             Console.WriteLine("Ctrl+c to exit");
