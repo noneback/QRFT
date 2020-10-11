@@ -15,38 +15,21 @@ namespace QRTF {
 
         public static void Main(string[] args) {
 
-            Console.WriteLine("QRCP in terminal");
             config.Port = Utils.GetRandomPort();
-            if (args == null || args.Length == 0) 
+            if (args == null || args.Length == 0) {
+                Logger.Error("args missing or Error\n");
                 args = new string[] { "--help" };
-            else {
-                Console.WriteLine("args missing\n");
-            }
+            } 
 
-            Parser.Default.ParseArguments<SendOptions, ReceiveOptions>(args).MapResult(
+            var state=Parser.Default.ParseArguments<SendOptions, ReceiveOptions>(args).MapResult(
                 (SendOptions o) => ArgsParser.SendSolution(o),
                 (ReceiveOptions o) => ArgsParser.ReceiveSolution(o),
                 error=>1
-                ); 
+                );
+            if (state != 0) Environment.Exit(1);
 
-
-
-
-
-            // for t
-            //config.FilePath = "./SAVE/test.txt";
-            //Console.WriteLine(config.Hash);
-            //config.LANAddr = Utils.getLocalIp();
-            //Console.WriteLine(config.DownloadURL);
-            //Console.WriteLine(Utils.generateQRCode(config.DownloadURL));
-
-            //test zip
-            //Utils.createZipFiles("./Program.cs", "./Startup.cs");
-            //Utils.deleteTmpZipFIle();
-            //parse and save into config
             if (args[0].Equals("--help"))
-                Environment.Exit(-1);
-
+                Environment.Exit(1);
 
             CreateHostBuilder(new string[] { "--urls", $"http://*:{config.Port}"}).Build().Run();
         }

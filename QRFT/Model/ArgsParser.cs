@@ -2,12 +2,13 @@
 using QRFT.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace QRFT.Model {
 
 
-    [Verb("send", HelpText = "send file to other terminals")]
+        [Verb("send", HelpText = "send file to other terminals")]
     public class SendOptions {
         [Option('z', "zip", Required = false, HelpText = "create zip archive to transfer")]
         public bool IsZip { get; set; }
@@ -38,27 +39,43 @@ namespace QRFT.Model {
             return parser;
         }
         public static int ReceiveSolution(ReceiveOptions options) {
-            Console.WriteLine("receive mode", options.StorePath);
-            config.StorePath = options.StorePath;
+            var storePath = options.StorePath;
+            if (storePath == null || storePath.Length == 0 || !Directory.Exists(storePath)) {
+                Logger.Error("store path  missing or is not a Directory");
+                return 1;
+            }
+
+            config.StorePath = storePath;
             config.LANAddr = Utils.GetLocalIp();
             Console.WriteLine(config.UploadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.UploadURL));
+            Console.WriteLine("Ctrl+c to exit");
             return 0;
         }
 
         public static int SendSolution(SendOptions options) {
-            Console.WriteLine("sending mode");
+            var files = options.Files.ToArray();
+            if (options.Files == null || files.Length == 0) {
+                Logger.Error("Files name missing");
+                return 1;
+            }
+            foreach (var file in files) {
+                if (!File.Exists(file)) {
+                    Logger.Error($"File not exists{file}");
+                    return 1;
+                }
+            }
             if (options.IsZip) {
-                Utils.CreateZipFiles(options.Files.ToArray());
+                Utils.CreateZipFiles(files);
                 config.FilePath = Utils.ZipFile;
             } else {
-                config.FilePath = options.Files.ToArray()[0];
+                config.FilePath = files[0];
             }
             config.Hash = Utils.Hash(config.FilePath);
             config.LANAddr = Utils.GetLocalIp();
             Console.WriteLine(config.DownloadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.DownloadURL));
-
+            Console.WriteLine("Ctrl+c to exit");
             return 0;
         }
     }

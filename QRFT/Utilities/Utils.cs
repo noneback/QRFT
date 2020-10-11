@@ -19,7 +19,7 @@ namespace QRFT.Utilities {
     public static class Utils {
 
         private static Dictionary<string, string> map = new Dictionary<string, string>();// for path hash
-        public static string ZipFile { set; get; } = $"./tmp-{DateTime.Now.ToLongDateString()}-{new Random().Next(100, 1000).ToString()}.zip";
+        public static string ZipFile { set; get; } = $"./tmp-{DateTime.Now.ToLongDateString()}-{new Random().Next(100, 1000)}.zip";
         private static string tmpNullDirPath = "./.null";
 
         public static string Hash(string filePath) {
@@ -47,14 +47,13 @@ namespace QRFT.Utilities {
                 // add files init
 
                 using (FileStream zipToOpen = new FileStream(ZipFile, FileMode.Open)) {
-                    using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update)) {
-                        foreach (var filepath in filePaths) {
-                            ZipArchiveEntry entry = archive.CreateEntry(filepath);
+                    using ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update);
+                    foreach (var filepath in filePaths) {
+                        ZipArchiveEntry entry = archive.CreateEntry(filepath);
 
-                            using (StreamWriter writer = new StreamWriter(entry.Open())) {
-                                var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-                                stream.CopyTo(writer.BaseStream);
-                            }
+                        using (StreamWriter writer = new StreamWriter(entry.Open())) {
+                            var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
+                            stream.CopyTo(writer.BaseStream);
                         }
                     }
                 }
@@ -75,7 +74,7 @@ namespace QRFT.Utilities {
                 }
                 return true;
             } catch (IOException e) {
-                Console.Error.WriteLine("Delete tmp.zip failed\n", e.Message);
+                Logger.Error($"Delete tmp.zip failed\n {e.Message}");
                 return false;
             }
         }
@@ -91,13 +90,13 @@ namespace QRFT.Utilities {
                 //size>=10G
                 buffer_size = 4 * M;
             } else if (size >= G) {
-                buffer_size =  1* M;
+                buffer_size = 1 * M;
             } else if (size >= 500 * M) {
                 buffer_size = 800 * K;
             } else if (size >= 100 * M) {
-                buffer_size = 500*K;
+                buffer_size = 500 * K;
             } else if (size >= 10 * M) {
-                buffer_size = 100*K ;
+                buffer_size = 100 * K;
             }
 
             return buffer_size;
@@ -115,12 +114,11 @@ namespace QRFT.Utilities {
             string hostname = Dns.GetHostName();//得到本机名   
             IPHostEntry localhost = Dns.GetHostEntry(hostname);
             List<IPAddress> ipv4 = new List<IPAddress>();
+            //add  IP Addr
             foreach (var addr in localhost.AddressList) {
                 if (addr.AddressFamily == AddressFamily.InterNetwork) {
                     ipv4.Add(addr);
-                    Console.WriteLine(addr.ToString());
                 }
-
             }
             return ipv4[^1].ToString();
 
@@ -130,7 +128,7 @@ namespace QRFT.Utilities {
             var random = new Random();
             var port = random.Next(10000, 60000);
 
-            while (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(p=>p.Port==port)){
+            while (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(p => p.Port == port)) {
                 port = random.Next(10000, 60000);
             }
             return port;

@@ -26,7 +26,7 @@ namespace QRTF.Controllers {
 
         [HttpGet("{hash}")]
         public IActionResult Get(string hash) {
-            Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
+            //Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
             // send file from computer
             if (!hash.Equals(this.hash)) {
                 return NotFound();
@@ -47,7 +47,7 @@ namespace QRTF.Controllers {
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload() {
             // receive file from phone via cache
-            Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
+            //Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
 
             var f = await Request.ReadFormAsync();
             var files = new List<IFormFile>(f.Files);
@@ -65,31 +65,30 @@ namespace QRTF.Controllers {
                 }
                 //set buffer_size
                 int buffer_size = Utils.GetBufferSize(size);
-                Console.WriteLine($"buffer_size:{buffer_size}");
+                //Console.WriteLine($"buffer_size:{buffer_size}");
 
                 if (file.Length > 0) {
-                    using (var stream = System.IO.File.Create(filePath)) {
-                        using (var bar = new MProgressBar(file.FileName)) {
-                            //add progress Bar
+                    using var stream = System.IO.File.Create(filePath);
+                    using (var bar = new MProgressBar(file.FileName)) {
+                        //add progress Bar
 
-                            byte[] buffer = new byte[buffer_size];
-                            int times = (int)(size / buffer_size) + 1, cnt = 0;
-                            var formFileStream = file.OpenReadStream();
+                        byte[] buffer = new byte[buffer_size];
+                        int times = (int)(size / buffer_size) + 1, cnt = 0;
+                        var formFileStream = file.OpenReadStream();
 
-                            //read formfile and write into target
-                            int readCnt = formFileStream.Read(buffer, 0, buffer_size);
-                            while (readCnt == buffer_size) {
-                                stream.Write(buffer, 0, buffer_size);
-                            
-                                readCnt = formFileStream.Read(buffer, 0, buffer_size);
-                                bar.Tick(100 * cnt++ / times);
-                            }
-                            stream.Write(buffer, 0, readCnt);
-                            bar.Tick(100);
+                        //read formfile and write into target
+                        int readCnt = formFileStream.Read(buffer, 0, buffer_size);
+                        while (readCnt == buffer_size) {
+                            stream.Write(buffer, 0, buffer_size);
+
+                            readCnt = formFileStream.Read(buffer, 0, buffer_size);
+                            bar.Tick(100 * cnt++ / times);
                         }
-
-                        Console.WriteLine($"Save file  in : {filePath}");
+                        stream.Write(buffer, 0, readCnt);
+                        bar.Tick(100);
                     }
+
+                    Console.WriteLine($"Save file  in : {filePath}");
                 }
             }
             return Ok(new { count = files.Count, size, state = "success" });
@@ -124,10 +123,10 @@ namespace QRTF.Controllers {
 
         [HttpGet("upload")]
         public ContentResult UPLOAD() {
-            Logger.ConsoleRouterLog("Get", "/api/file/upload", DateTime.Now);
-            Console.WriteLine(System.IO.Directory.GetCurrentDirectory());
+            //Logger.ConsoleRouterLog("Get", "/api/file/upload", DateTime.Now);
             return base.Content(UploadPage.html, "text/html");
         }
+
 
         public static async Task<int> WriteFileAsync(System.IO.Stream stream, string path) {
             const int FILE_WRITE_SIZE = 84975;//写出缓冲区大小
