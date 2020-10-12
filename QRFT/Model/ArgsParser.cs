@@ -8,21 +8,21 @@ using System.Linq;
 namespace QRFT.Model {
 
 
-        [Verb("send", HelpText = "send file to other terminals")]
+        [Verb("send", HelpText = "Send file to other terminals")]
     public class SendOptions {
-        [Option('z', "zip", Required = false, HelpText = "create zip archive to transfer")]
+        [Option('z', "zip", Required = false, HelpText = "Create zip archive to transfer")]
         public bool IsZip { get; set; }
 
-        [Option('r', "romote", Required = false, HelpText = "send to remote")]
+        [Option('r', "romote", Required = false, HelpText = "Send to remote")]
         public bool IsRemote { get; set; }
 
-        [Value(0, HelpText = "files to be transfered")]
+        [Value(0, HelpText = "Files to be transfered")]
         public IEnumerable<string> Files { get; set; }
     }
 
-    [Verb("receive", HelpText = "receive from other terminals")]
+    [Verb("receive", HelpText = "Receive from other terminals")]
     public class ReceiveOptions {
-        [Value(0, HelpText = "store path of received file")]
+        [Value(0, HelpText = "Store path of received file")]
         public string StorePath { get; set; }
     }
 

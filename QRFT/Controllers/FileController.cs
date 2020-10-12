@@ -56,6 +56,7 @@ namespace QRTF.Controllers {
             foreach (var file in files) {
                 //set file path
                 string filePath;
+                Console.WriteLine($"Now processing {file.FileName}");
                 if (file.FileName != null) {
                     //filePath = "./SAVE/" + file.FileName;
                     filePath =config.StorePath + file.FileName;
