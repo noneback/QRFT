@@ -27,11 +27,15 @@ namespace QRFT.Model {
 
         public int Port { set; get; } = 5000;
 
+        public bool ViaCache { get; set; } = false;
+
         public string BaseURL { get => $"http://{LANAddr}:{Port}/api/file/"; }
 
         public string UploadURL { get => $"{BaseURL}upload"; }
 
+
         public string DownloadURL { get => $"{BaseURL}{Hash}"; }
+
 
         public string FilePath {
             set {

@@ -38,8 +38,6 @@ namespace QRTF.Controllers {
                 return NotFound();
             }
 
-            //Response.Headers.Add("Content-Disposition","")
-
             return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = Path.GetFileName(filePath) };
         }
 
@@ -47,7 +45,7 @@ namespace QRTF.Controllers {
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload() {
             // receive file from phone via cache
-            //Logger.ConsoleRouterLog("Post", "/api/file/upload", DateTime.Now);
+            //Logger.ConsoleRouterLog("Post", "/api/file/cache", DateTime.Now);
 
             var f = await Request.ReadFormAsync();
             var files = new List<IFormFile>(f.Files);
@@ -58,15 +56,13 @@ namespace QRTF.Controllers {
                 string filePath;
                 Console.WriteLine($"Now processing {file.FileName}");
                 if (file.FileName != null) {
-                    //filePath = "./SAVE/" + file.FileName;
                     filePath = config.StorePath + file.FileName;
                 } else {
-                    //filePath = "./SAVE/TEMP.unknow";
                     filePath = config.StorePath + "TEMP.unknow";
                 }
+
                 //set buffer_size
                 int buffer_size = Utils.GetBufferSize(size);
-                //Console.WriteLine($"buffer_size:{buffer_size}");
 
                 if (file.Length > 0) {
                     using var stream = System.IO.File.Create(filePath);
@@ -98,7 +94,7 @@ namespace QRTF.Controllers {
         [HttpPost("stream")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadingStream() {
-            Logger.ConsoleRouterLog("stream", "/api/file/stream", DateTime.Now);
+            //Logger.ConsoleRouterLog("Post", "/api/file/stream", DateTime.Now);
             // receive file from phone via stream
             //获取boundary
             var boundary = HeaderUtilities.RemoveQuotes(MediaTypeHeaderValue.Parse(Request.ContentType).Boundary).Value;
@@ -127,14 +123,12 @@ namespace QRTF.Controllers {
 
         [HttpGet("upload")]
         public ContentResult UPLOAD() {
-            //Logger.ConsoleRouterLog("Get", "/api/file/upload", DateTime.Now);
             return base.Content(UploadPage.html, "text/html");
         }
 
 
         public static async Task<long> WriteFileAsync(Stream stream, string path, long fileLen) {
 
-            int num = 0;
              int FILE_WRITE_SIZE = Utils.GetBufferSize(fileLen);//写出缓冲区大小
             long writeCount = 0;
             using (FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, FILE_WRITE_SIZE, true)) {
@@ -145,13 +139,11 @@ namespace QRTF.Controllers {
                     while ((readCount = await stream.ReadAsync(byteArr, 0, byteArr.Length)) > 0) {
                         await fileStream.WriteAsync(byteArr, 0, readCount);
                         writeCount += readCount;
-                        //Console.WriteLine(100 * writeCount / fileLen);
                         bar.Tick((int)(100 * writeCount / fileLen));
                     }
                     bar.Tick(100);
                 }
             }
-            Console.WriteLine($"sum and readCount::{num},{writeCount}");
             return writeCount;
         }
     }

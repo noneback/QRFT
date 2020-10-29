@@ -24,6 +24,8 @@ namespace QRFT.Model {
     public class ReceiveOptions {
         [Value(0, HelpText = "Store path of received file")]
         public string StorePath { get; set; }
+        [Option('c',"cache",Required =false,HelpText ="via cache or stream")]
+        public bool ViaCache { get; set; }
     }
 
 
@@ -41,6 +43,9 @@ namespace QRFT.Model {
                 Logger.Error("store path  missing or is not a Directory");
                 return 1;
             }
+
+            config.ViaCache = options.ViaCache;
+            Console.WriteLine(config.ViaCache + "::" + options.ViaCache);
             config.StorePath = storePath;
             Console.WriteLine(config.UploadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.UploadURL));

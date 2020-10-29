@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Utilities\MultipartRequestHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="QRCoder" Version="1.3.9" />
     <PackageReference Include="ShellProgressBar" Version="5.0.0" />

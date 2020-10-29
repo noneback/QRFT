@@ -15,19 +15,13 @@ namespace QRTF {
 
         public static void Main(string[] args) {
             try {
-                config.Port = 8888;
+                config.Port = Utils.GetRandomPort();
                 config.LANAddr = Utils.GetLocalIp();
-
-                args = new string[] {
-                    "receive","./"
-                };
-
+          
                 if (args == null || args.Length == 0) {
                     Logger.Error("args missing or Error\n");
                     args = new string[] { "--help" };
                 }
-
-
 
                 var state = Parser.Default.ParseArguments<SendOptions, ReceiveOptions>(args).MapResult(
                     (SendOptions o) => ArgsParser.SendSolution(o),

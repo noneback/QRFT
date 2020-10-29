@@ -1,6 +1,8 @@
-﻿namespace QRFT.Model {
+﻿using QRFT.Model;
+namespace QRFT.Model {
 
     public class UploadPage {
+        private static string method = Config.GetInstance().ViaCache ? "cache" : "stream";
 
         public static readonly string html = "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -149,7 +151,7 @@
                 "                        console.log(this.responseText);\n" +
                 "                    }\n" +
                 "                });\n" +
-                $"                xhr.open(\"POST\", \"/api/file/stream\");\n" +
+                $"                xhr.open(\"POST\", \"/api/file/{method}\");\n" +
                 "                xhr.send(data);\n" +
                 "            }\n" +
                 "        })\n" +
