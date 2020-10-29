@@ -33,17 +33,17 @@ namespace QRTF.Controllers {
             }
 
             var stream = System.IO.File.OpenRead(filePath);
-            
+
             if (stream == null) {
                 return NotFound();
             }
 
             //Response.Headers.Add("Content-Disposition","")
 
-            return  new FileStreamResult(stream, "application/octet-stream") { FileDownloadName=Path.GetFileName(filePath)};
+            return new FileStreamResult(stream, "application/octet-stream") { FileDownloadName = Path.GetFileName(filePath) };
         }
 
-        [HttpPost("upload")]
+        [HttpPost("cache")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload() {
             // receive file from phone via cache
@@ -59,10 +59,10 @@ namespace QRTF.Controllers {
                 Console.WriteLine($"Now processing {file.FileName}");
                 if (file.FileName != null) {
                     //filePath = "./SAVE/" + file.FileName;
-                    filePath =config.StorePath + file.FileName;
+                    filePath = config.StorePath + file.FileName;
                 } else {
                     //filePath = "./SAVE/TEMP.unknow";
-                    filePath =  config.StorePath+"TEMP.unknow";
+                    filePath = config.StorePath + "TEMP.unknow";
                 }
                 //set buffer_size
                 int buffer_size = Utils.GetBufferSize(size);
@@ -98,28 +98,31 @@ namespace QRTF.Controllers {
         [HttpPost("stream")]
         [DisableRequestSizeLimit]
         public async Task<IActionResult> UploadingStream() {
+            Logger.ConsoleRouterLog("stream", "/api/file/stream", DateTime.Now);
             // receive file from phone via stream
-            Console.WriteLine("visit stream");
             //获取boundary
             var boundary = HeaderUtilities.RemoveQuotes(MediaTypeHeaderValue.Parse(Request.ContentType).Boundary).Value;
-            Console.WriteLine(boundary);
+
             //得到reader
             var reader = new MultipartReader(boundary, Request.Body);
-            //{ BodyLengthLimit = 2000 };//
+            var fileLen = Request.ContentLength;
             var section = await reader.ReadNextSectionAsync();
             //test
-            string _targetFilePath = "./";
+            string _targetFilePath = config.StorePath;
             //读取section
             while (section != null) {
                 var hasContentDispositionHeader = ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
+                //section.ContentDisposition.
+
                 if (hasContentDispositionHeader) {
-                    var trustedFileNameForFileStorage = Path.GetRandomFileName();
-                    await WriteFileAsync(section.Body, Path.Combine(_targetFilePath, trustedFileNameForFileStorage));
+
+                    var trustedFileNameForFileStorage = contentDisposition.FileName.Value;
+                    await WriteFileAsync(section.Body, Path.Combine(_targetFilePath, trustedFileNameForFileStorage), (long)fileLen);
                 }
                 section = await reader.ReadNextSectionAsync();
             }
-            Console.WriteLine("stream closed");
-            return Created(nameof(FileController), null);
+
+            return Created(nameof(FileController), new { state = "seccess" });
         }
 
         [HttpGet("upload")]
@@ -129,17 +132,26 @@ namespace QRTF.Controllers {
         }
 
 
-        public static async Task<int> WriteFileAsync(System.IO.Stream stream, string path) {
-            const int FILE_WRITE_SIZE = 84975;//写出缓冲区大小
-            int writeCount = 0;
+        public static async Task<long> WriteFileAsync(Stream stream, string path, long fileLen) {
+
+            int num = 0;
+             int FILE_WRITE_SIZE = Utils.GetBufferSize(fileLen);//写出缓冲区大小
+            long writeCount = 0;
             using (FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, FILE_WRITE_SIZE, true)) {
-                byte[] byteArr = new byte[FILE_WRITE_SIZE];
-                int readCount = 0;
-                while ((readCount = await stream.ReadAsync(byteArr, 0, byteArr.Length)) > 0) {
-                    await fileStream.WriteAsync(byteArr, 0, readCount);
-                    writeCount += readCount;
+                using (var bar = new MProgressBar(path)) {
+                    bar.Tick(0);
+                    byte[] byteArr = new byte[FILE_WRITE_SIZE];
+                    int readCount = 0;
+                    while ((readCount = await stream.ReadAsync(byteArr, 0, byteArr.Length)) > 0) {
+                        await fileStream.WriteAsync(byteArr, 0, readCount);
+                        writeCount += readCount;
+                        //Console.WriteLine(100 * writeCount / fileLen);
+                        bar.Tick((int)(100 * writeCount / fileLen));
+                    }
+                    bar.Tick(100);
                 }
             }
+            Console.WriteLine($"sum and readCount::{num},{writeCount}");
             return writeCount;
         }
     }

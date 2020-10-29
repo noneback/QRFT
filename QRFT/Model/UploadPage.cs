@@ -141,6 +141,7 @@
                 "\n" +
                 "                var data = new FormData();\n" +
                 "                data.append(\"\", file, filename);\n" +
+                "                console.log(data);" +
                 "                var xhr = new XMLHttpRequest();\n" +
                 "                xhr.withCredentials = true;\n" +
                 "                xhr.addEventListener(\"readystatechange\", function () {\n" +
@@ -148,7 +149,7 @@
                 "                        console.log(this.responseText);\n" +
                 "                    }\n" +
                 "                });\n" +
-                $"                xhr.open(\"POST\", \"/api/file/upload\");\n" +
+                $"                xhr.open(\"POST\", \"/api/file/stream\");\n" +
                 "                xhr.send(data);\n" +
                 "            }\n" +
                 "        })\n" +

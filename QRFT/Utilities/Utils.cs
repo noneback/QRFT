@@ -51,10 +51,9 @@ namespace QRFT.Utilities {
                     foreach (var filepath in filePaths) {
                         ZipArchiveEntry entry = archive.CreateEntry(filepath);
 
-                        using (StreamWriter writer = new StreamWriter(entry.Open())) {
-                            var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
-                            stream.CopyTo(writer.BaseStream);
-                        }
+                        using StreamWriter writer = new StreamWriter(entry.Open());
+                        var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
+                        stream.CopyTo(writer.BaseStream);
                     }
                 }
                 Console.WriteLine("zip archive has been created\n");
@@ -99,7 +98,7 @@ namespace QRFT.Utilities {
                 buffer_size = 100 * K;
             }
 
-            return buffer_size;
+            return buffer_size/10;
         }
 
         public static string GenerateQRCode(string msg) {
