@@ -1,5 +1,5 @@
 ﻿# QRFT
-QR code file transfer between your terminals via LAN 
+QR code file transfer between your terminals via LAN,got insprited by claudiodangelis/qrcp,built with asp.net(C#)
 ## build
 > git clone  
 > import into vs2019 and build
@@ -30,7 +30,7 @@ the QR code **cannot display** correctly because of the font used by Console , p
 
 ## todo
 - [x] transfer via cache
-- [ ] transfer via stream
+- [x] transfer via stream
 - [x] basic function receive and send
 - [x] commandline parse and save to config
 - [x] QR code display
