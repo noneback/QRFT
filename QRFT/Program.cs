@@ -23,6 +23,7 @@ namespace QRTF {
                     args = new string[] { "--help" };
                 }
 
+
                 var state = Parser.Default.ParseArguments<SendOptions, ReceiveOptions>(args).MapResult(
                     (SendOptions o) => ArgsParser.SendSolution(o),
                     (ReceiveOptions o) => ArgsParser.ReceiveSolution(o),

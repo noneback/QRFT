@@ -129,7 +129,7 @@ namespace QRTF.Controllers {
 
         public static async Task<long> WriteFileAsync(Stream stream, string path, long fileLen) {
 
-             int FILE_WRITE_SIZE = Utils.GetBufferSize(fileLen);//写出缓冲区大小
+            int FILE_WRITE_SIZE = Utils.GetBufferSize(fileLen);//写出缓冲区大小
             long writeCount = 0;
             using (FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, FILE_WRITE_SIZE, true)) {
                 using (var bar = new MProgressBar(path)) {

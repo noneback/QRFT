@@ -8,7 +8,7 @@ using System.Linq;
 namespace QRFT.Model {
 
 
-        [Verb("send", HelpText = "Send file to other terminals")]
+    [Verb("send", HelpText = "Send file to other terminals")]
     public class SendOptions {
         [Option('z', "zip", Required = false, HelpText = "Create zip archive to transfer")]
         public bool IsZip { get; set; }
@@ -22,10 +22,12 @@ namespace QRFT.Model {
 
     [Verb("receive", HelpText = "Receive from other terminals")]
     public class ReceiveOptions {
+        [Option('c', "cache", Required = false, HelpText = "via cache or stream")]
+        public bool ViaCache { get; set; }
+
         [Value(0, HelpText = "Store path of received file")]
         public string StorePath { get; set; }
-        [Option('c',"cache",Required =false,HelpText ="via cache or stream")]
-        public bool ViaCache { get; set; }
+
     }
 
 
@@ -38,6 +40,8 @@ namespace QRFT.Model {
             return parser;
         }
         public static int ReceiveSolution(ReceiveOptions options) {
+
+            // initialize receive config
             var storePath = options.StorePath;
             if (storePath == null || storePath.Length == 0 || !Directory.Exists(storePath)) {
                 Logger.Error("store path  missing or is not a Directory");
@@ -45,7 +49,7 @@ namespace QRFT.Model {
             }
 
             config.ViaCache = options.ViaCache;
-            Console.WriteLine(config.ViaCache + "::" + options.ViaCache);
+
             config.StorePath = storePath;
             Console.WriteLine(config.UploadURL);
             Console.WriteLine(Utils.GenerateQRCode(config.UploadURL));
@@ -54,6 +58,7 @@ namespace QRFT.Model {
         }
 
         public static int SendSolution(SendOptions options) {
+            // initialize send config
             var files = options.Files.ToArray();
 
             if (options.Files == null || files.Length == 0) {
