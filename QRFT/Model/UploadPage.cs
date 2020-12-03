@@ -16,7 +16,7 @@ namespace QRFT.Model {
                 "            margin: 0;\n" +
                 "            font-size: 2em;\n" +
                 "            padding: 0;\n" +
-                "            background: center url(https://i.loli.net/2020/10/04/HOJcRumzboxT9KC.png) no-repeat;\n" +
+                "            background: center url(https://ftp.bmp.ovh/imgs/2020/12/af2ef55679471cda.png) no-repeat;\n" +
                 "            background-size: cover;\n" +
                 "            vertical-align: middle;\n" +
                 "        }\n" +

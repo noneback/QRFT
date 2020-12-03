@@ -8,16 +8,22 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace QRTF.Controllers {
 
+
     [Route("api/[controller]")]
     [ApiController]
     public class FileController : ControllerBase {
+
         private static Config config = Config.GetInstance();
         private string filePath;
         private string hash;
+        private static SemaphoreSlim semaphore = new SemaphoreSlim(1);
+        private static object locker = new object();
+
 
         public FileController() {
             filePath = config.FilePath;
@@ -45,16 +51,17 @@ namespace QRTF.Controllers {
         [DisableRequestSizeLimit]
         public async Task<IActionResult> Upload() {
             // receive file from phone via cache
-            //Logger.ConsoleRouterLog("Post", "/api/file/cache", DateTime.Now);
 
+            //Logger.ConsoleRouterLog("Post", "/api/file/cache", DateTime.Now);
             var f = await Request.ReadFormAsync();
             var files = new List<IFormFile>(f.Files);
             long size = files.Sum(f => f.Length);
 
             foreach (var file in files) {
+                lock (locker) { 
                 //set file path
                 string filePath;
-                Console.WriteLine($"Now processing {file.FileName}");
+                //Console.WriteLine($"Now processing {file.FileName}");
                 if (file.FileName != null) {
                     filePath = config.StorePath + file.FileName;
                 } else {
@@ -83,9 +90,9 @@ namespace QRTF.Controllers {
                         }
                         stream.Write(buffer, 0, readCnt);
                         bar.Tick(100);
-                    }
 
-                    Console.WriteLine($"Save file  in : {filePath}");
+                        }
+                    }
                 }
             }
             return Ok(new { count = files.Count, size, state = "success" });
@@ -96,7 +103,7 @@ namespace QRTF.Controllers {
         public async Task<IActionResult> UploadingStream() {
             //Logger.ConsoleRouterLog("Post", "/api/file/stream", DateTime.Now);
             // receive file from phone via stream
-            //获取boundary
+
             var boundary = HeaderUtilities.RemoveQuotes(MediaTypeHeaderValue.Parse(Request.ContentType).Boundary).Value;
 
             //得到reader
@@ -111,12 +118,19 @@ namespace QRTF.Controllers {
                 //section.ContentDisposition.
 
                 if (hasContentDispositionHeader) {
-
                     var trustedFileNameForFileStorage = contentDisposition.FileName.Value;
+                    //lock (locker) {
+                    //mutex.WaitOne();
+                   await semaphore.WaitAsync();
                     await WriteFileAsync(section.Body, Path.Combine(_targetFilePath, trustedFileNameForFileStorage), (long)fileLen);
+                    semaphore.Release();
+                    //mutex.ReleaseMutex();
+                    //}
                 }
                 section = await reader.ReadNextSectionAsync();
             }
+
+
 
             return Created(nameof(FileController), new { state = "seccess" });
         }
@@ -128,11 +142,13 @@ namespace QRTF.Controllers {
 
 
         public static async Task<long> WriteFileAsync(Stream stream, string path, long fileLen) {
-
+          
             int FILE_WRITE_SIZE = Utils.GetBufferSize(fileLen);//写出缓冲区大小
             long writeCount = 0;
+
             using (FileStream fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Write, FILE_WRITE_SIZE, true)) {
                 using (var bar = new MProgressBar(path)) {
+
                     bar.Tick(0);
                     byte[] byteArr = new byte[FILE_WRITE_SIZE];
                     int readCount = 0;
