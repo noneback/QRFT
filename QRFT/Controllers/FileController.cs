@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using QRFT.Model;
 using QRFT.Utilities;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

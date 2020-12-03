@@ -13,8 +13,8 @@ namespace QRFT.Model {
         [Option('z', "zip", Required = false, HelpText = "Create zip archive to transfer")]
         public bool IsZip { get; set; }
 
-        [Option('r', "romote", Required = false, HelpText = "Send to remote")]
-        public bool IsRemote { get; set; }
+        //[Option('r', "romote", Required = false, HelpText = "Send to remote")]
+        //public bool IsRemote { get; set; }
 
         [Value(0, HelpText = "Files to be transfered")]
         public IEnumerable<string> Files { get; set; }
@@ -72,6 +72,12 @@ namespace QRFT.Model {
                 }
             }
             if (options.IsZip) {
+                // delete the last zip file used by qrtf
+                var tmpDir = new DirectoryInfo("./");
+                foreach(var file in tmpDir.EnumerateFiles("tmp-*-*.zip")) {
+                    file.Delete();
+                }
+
                 Utils.CreateZipFiles(files);
                 config.FilePath = Utils.ZipFile;
             } else {

@@ -55,12 +55,12 @@ namespace QRFT.Utilities {
                         stream.CopyTo(writer.BaseStream);
                     }
                 }
-                Console.WriteLine("zip archive has been created\n");
+                Console.WriteLine($"zip archive created{ZipFile}\n");
                 return true;
             } catch (FileNotFoundException e) {
                 Console.Error.WriteLine("File Not found: ", e.FileName);
             } catch (IOException e) {
-                Console.Error.WriteLine("File has already existed \n", e.Message);
+                Console.Error.WriteLine("File has already existed\n", e.Message);
             }
             return false;
         }
